@@ -1,3 +1,5 @@
+import 'react'
+
 declare module 'react' {
   interface HTMLAttributes<T> {
     'data-karma-action'?: string
