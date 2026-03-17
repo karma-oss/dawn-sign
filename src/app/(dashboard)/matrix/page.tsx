@@ -21,7 +21,7 @@ export default async function MatrixPage() {
   const supabase = await createClient()
   const orgId = staff.organization_id
 
-  const [{ data: contacts }, { data: templates }, { data: records }] =
+  const [{ data: contacts }, { data: templates }] =
     await Promise.all([
       supabase
         .from('contacts')
@@ -33,19 +33,15 @@ export default async function MatrixPage() {
         .select('id, title')
         .eq('organization_id', orgId)
         .order('title'),
-      supabase
+    ])
+
+  const contactIds = contacts?.map((c) => c.id) ?? []
+  const { data: records } = contactIds.length > 0
+    ? await supabase
         .from('consent_records')
         .select('contact_id, template_id, status')
-        .in(
-          'contact_id',
-          (
-            await supabase
-              .from('contacts')
-              .select('id')
-              .eq('organization_id', orgId)
-          ).data?.map((c) => c.id) ?? []
-        ),
-    ])
+        .in('contact_id', contactIds)
+    : { data: [] as { contact_id: string; template_id: string; status: string }[] }
 
   // Build lookup map: contact_id -> template_id -> status
   const statusMap: Record<string, Record<string, string>> = {}

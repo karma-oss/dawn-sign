@@ -10,6 +10,13 @@ export async function PUT(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const { data: staff } = await supabase
+    .from('staff')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+  if (!staff) return NextResponse.json({ error: 'No staff' }, { status: 403 })
+
   const body = await request.json()
   const { data, error } = await supabase
     .from('contacts')
@@ -22,6 +29,7 @@ export async function PUT(
       notes: body.notes,
     })
     .eq('id', id)
+    .eq('organization_id', staff.organization_id)
     .select()
     .single()
 
@@ -38,7 +46,18 @@ export async function DELETE(
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { error } = await supabase.from('contacts').delete().eq('id', id)
+  const { data: staff } = await supabase
+    .from('staff')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+  if (!staff) return NextResponse.json({ error: 'No staff' }, { status: 403 })
+
+  const { error } = await supabase
+    .from('contacts')
+    .delete()
+    .eq('id', id)
+    .eq('organization_id', staff.organization_id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }
