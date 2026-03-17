@@ -47,8 +47,31 @@ export function SendSignRequestButton({
     setLoading(false)
   }
 
+  async function handleDirect() {
+    if (!templateId) return
+    setLoading(true)
+    setMessage(null)
+
+    const res = await fetch('/api/sign/direct', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contact_id: contactId, template_id: templateId }),
+    })
+
+    if (res.ok) {
+      const { token } = await res.json()
+      window.open(`/sign/${token}`, '_blank')
+      setMessage('手渡しサイン画面を開きました')
+      setTemplateId('')
+    } else {
+      const data = await res.json()
+      setMessage(`エラー: ${data.error}`)
+    }
+    setLoading(false)
+  }
+
   return (
-    <div className="flex items-end gap-3">
+    <div className="flex flex-wrap items-end gap-3">
       <div className="w-64">
         <Select value={templateId} onValueChange={(v) => setTemplateId(v ?? '')}>
           <SelectTrigger data-karma-test-id="template-select">
@@ -67,14 +90,18 @@ export function SendSignRequestButton({
         onClick={handleSend}
         disabled={!templateId || loading}
         data-karma-action="send-sign-request"
-        data-karma-context="consent-management"
-        data-karma-next="email-sent-confirmation"
-        data-karma-auth="required"
-        data-karma-security="csrf-protected"
         data-karma-test-id="send-sign-request-btn"
-        data-karma-role="staff"
       >
-        {loading ? '送信中...' : '署名リクエストを送信'}
+        {loading ? '処理中...' : 'メールで送信'}
+      </Button>
+      <Button
+        variant="outline"
+        onClick={handleDirect}
+        disabled={!templateId || loading}
+        data-karma-action="direct-sign"
+        data-karma-test-id="direct-sign-btn"
+      >
+        手渡しサイン
       </Button>
       {message && (
         <span

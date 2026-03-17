@@ -69,7 +69,6 @@ export default async function ContactDetailPage({
         <h1 className="text-2xl font-bold">{contact.name}</h1>
         <div className="mt-1 flex gap-4 text-sm text-gray-500">
           {contact.email && <span>{contact.email}</span>}
-          {contact.phone && <span>{contact.phone}</span>}
           {contact.internal_id && <span>ID: {contact.internal_id}</span>}
         </div>
         {contact.tags?.length > 0 && (

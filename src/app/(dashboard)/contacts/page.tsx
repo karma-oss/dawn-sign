@@ -28,7 +28,6 @@ type Contact = {
   id: string
   name: string
   email: string | null
-  phone: string | null
   internal_id: string | null
   tags: string[]
   notes: string | null
@@ -45,7 +44,6 @@ export default function ContactsPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    phone: '',
     internal_id: '',
     tags: '',
     notes: '',
@@ -64,7 +62,7 @@ export default function ContactsPage() {
 
   function openCreateDialog() {
     setEditingContact(null)
-    setForm({ name: '', email: '', phone: '', internal_id: '', tags: '', notes: '' })
+    setForm({ name: '', email: '', internal_id: '', tags: '', notes: '' })
     setDialogOpen(true)
   }
 
@@ -73,7 +71,6 @@ export default function ContactsPage() {
     setForm({
       name: contact.name,
       email: contact.email ?? '',
-      phone: contact.phone ?? '',
       internal_id: contact.internal_id ?? '',
       tags: contact.tags?.join(', ') ?? '',
       notes: contact.notes ?? '',
@@ -166,14 +163,6 @@ export default function ContactsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">電話</Label>
-                <Input
-                  id="phone"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="internal_id">患者ID</Label>
                 <Input
                   id="internal_id"
@@ -236,7 +225,6 @@ export default function ContactsPage() {
                 <TableRow>
                   <TableHead>名前</TableHead>
                   <TableHead>メール</TableHead>
-                  <TableHead>電話</TableHead>
                   <TableHead>患者ID</TableHead>
                   <TableHead>タグ</TableHead>
                   <TableHead>操作</TableHead>
@@ -258,7 +246,6 @@ export default function ContactsPage() {
                       </Link>
                     </TableCell>
                     <TableCell>{contact.email}</TableCell>
-                    <TableCell>{contact.phone}</TableCell>
                     <TableCell>{contact.internal_id}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
